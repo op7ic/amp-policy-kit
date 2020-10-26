@@ -10,7 +10,7 @@ Install the following prerequsites:
 * [xmltodict](https://pypi.org/project/xmltodict/)
 * [beautifulsoup4](https://pypi.org/project/beautifulsoup4/)
 
-The following command line should take care of prerequisites on Debian/Ubuntu:
+The following command line should take care of prerequisites on Debian/Ubuntu/WSL:
 ```
 pip3 install xmltodict beautifulsoup4
 ```
@@ -101,17 +101,6 @@ AMP API endpoint need to be specified in the config file under 'domainIP' parame
 [+] Business GUID: XXXXXXXXXX
 [!] WARNING, Last policy change: 102 days, 8:58:49.211369 ago
 [+] File Exclusions in policy:
-         .bup
-         .db-journal
-         .db-shm
-         .db-wal
-         .lck
-         .log
-         .pst
-         .sc2
-         .sd2
-         .SPDS
-         .utl
          C:\Program Files\Sophos\AutoUpdate\Cache\
          C:\ProgramData\Sophos\
          C:\ProgramData\Sophos\AutoUpdate\Cache\
@@ -125,24 +114,9 @@ AMP API endpoint need to be specified in the config file under 'domainIP' parame
         WARNING, wildecard : C:\\Windows\\Temp\\Sophos.*
 [+] Certificate Exclusions in policy:
          VeriSign Class 3 Code Signing
-         Microsoft Code Signing PCA
-         Microsoft Windows Verification PCA
-         Microsoft Windows Verification Intermediate PCA
-         Microsoft Windows Hardware Compatibility PCA
-         Symantec Class 3 SHA256 Code Signing CA
-         Symantec Class 3 Extended Validation Code Signing CA - G2
-         DigiCert SHA2 Assured ID Code Signing CA
-         VeriSign Class 3 Code Signing 2010 CA
 [+] Process Exclusions in policy:
-         3|0||CSIDL_AMP_VERSION\sfc.exe|816|
-         2|0||C:\$WINDOWS.~BT\Sources\SetupHost.exe|1|
          2|0||C:\Program Files\Altiris\Altiris Agent\AeXNSAgent.exe|1|
-         2|0||C:\Program Files\Cisco\Orbital\orbital-ampwin.exe|1|
-         2|0||C:\Program Files\Cisco\Orbital\Orbital.exe|1|
-         2|0||C:\Program Files\Cisco\Orbital\osqueryd.exe|1|
          2|0||C:\Program Files\Common Files\microsoft shared\ClickToRun\OfficeClickToRun.exe|1|
-         2|0||C:\Program Files\McAfee\Agent\macmnsvc.exe|1|
-         2|0||C:\Program Files\McAfee\Agent\x86\McScript_InUse.exe|1|
          2|0||C:\Program Files\McAfee\Endpoint Security\Adaptive Threat Protection\mfeatp.exe|1|
          2|0||C:\Program Files\McAfee\Endpoint Security\Endpoint Security Platform\mfeesp.exe|1|
          2|0||C:\Program Files\McAfee\Endpoint Security\Threat Prevention\mfetp.exe|1|
@@ -158,7 +132,7 @@ AMP API endpoint need to be specified in the config file under 'domainIP' parame
 ## TODO
 
 - [ ] Android policy handling
-- [ ] IOS policy handling
+- [ ] iOS policy handling
 - [x] Windows policy handling
 - [x] Linux policy handling
 - [x] Mac policy handling

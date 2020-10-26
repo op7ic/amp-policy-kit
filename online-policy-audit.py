@@ -455,8 +455,9 @@ def main():
 	    	pdic = xmltodict.parse(b4_xml_obj.prettify(),dict_constructor=dict)
 	    	pdic_json = json.dumps(pdic)
 	    	json_object = json.loads(pdic_json)
-
+	    	# Print separator
 	    	print("#" * 75)
+
 	    	try:
 	    		policy_header = json_object['ns0:Signature']['ns0:Object']['ns0:config']['ns0:janus']
 	    		if validate_json_element(json_object['ns0:Signature']['ns0:Object']['ns0:config'],'ns0:exclusions'):
@@ -467,6 +468,13 @@ def main():
 	    			agentconfig = json_object['ns0:Signature']['ns0:Object']['ns0:config']['ns0:agent']
 	    		else:
 	    			agentconfig = None
+	    		# Print groups this policy is used in 
+		    	if(len(response_json['data']['used_in_groups']) > 0):
+			    	print("[+] Policy Used in Group:")
+			    	for g in response_json['data']['used_in_groups']:
+			    		 print("\t[+] Name: {} Description: {} Group GUID: {}".format(g['name'],g['description'],g['guid']))
+	    		else:
+	    			print("[!] Policy not used in any groups")
 
 	    		policy_type = policy_detail['product']
 	    		# A 'simple' way of finding product type based on API type
