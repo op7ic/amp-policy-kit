@@ -105,15 +105,15 @@ def parse_agentsettings(json_agent,json_object,product_type):
 			cloud_ttl = cloud_settings['ns0:cache']['ns0:ttl']
 			if ( cloud_ttl != None):
 				if (int(cloud_ttl['ns0:unknown']) > 3600):
-					print("\t[!]WARNING, potentially long TTL on unknown hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:unknown'])))
+					print("\t[!]WARNING, Potentially long TTL on unknown hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:unknown'])))
 				if (int(cloud_ttl['ns0:clean']) > 3600):
-					print("\t[!]WARNING, potentially long TTL on clean hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:clean'])))
+					print("\t[!]WARNING, Potentially long TTL on clean hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:clean'])))
 				if (int(cloud_ttl['ns0:malicious']) > 3600):
-					print("\t[!]WARNING, potentially long TTL on malicious hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:malicious'])))
+					print("\t[!]WARNING, Potentially long TTL on malicious hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:malicious'])))
 				if (int(cloud_ttl['ns0:unseen']) > 3600):
-					print("\t[!]WARNING, potentially long TTL on unseen hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:unseen'])))
+					print("\t[!]WARNING, Potentially long TTL on unseen hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:unseen'])))
 				if (int(cloud_ttl['ns0:block']) > 3600):
-					print("\t[!]WARNING, potentially long TTL on block hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:block'])))
+					print("\t[!]WARNING, Potentially long TTL on block hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:block'])))
 
 		# APDE = behavioral analytics
 		if validate_json_element(json_agent,'ns0:apde'):
@@ -154,11 +154,11 @@ def parse_agentsettings(json_agent,json_object,product_type):
 				agent_isolation_settings = json_agent['ns0:endpointisolation'] if "ns0:endpointisolation" in json_agent else None
 				if(agent_isolation_settings != None):
 					if (str(agent_isolation_settings['ns0:enable']) == '0'):
-						print("\t[!]WARNING, System Isolation feature is disabled. Change this in 'Advance Settings > Endpoint Isolation'")
+						print("\t[!]WARNING, Endpoint Isolation feature is disabled. Change this in 'Advance Settings > Endpoint Isolation'")
 					if (str(agent_isolation_settings['ns0:enable']) == '1' and str(agent_isolation_settings['ns0:allowproxy']) == '1'):
-						print("\t[!]WARNING, System Isolation feature is ENABLED and access to proxy is enabled. Change this in 'Advance Settings > Endpoint Isolation'")
+						print("\t[!]WARNING, Endpoint Isolation feature is ENABLED and access to proxy is enabled. Change this in 'Advance Settings > Endpoint Isolation'")
 					if (str(agent_isolation_settings['ns0:enable']) == '1' and str(agent_isolation_settings['ns0:allowproxy']) == '0'):
-						print("\t[!]WARNING, System Isolation feature is ENABLED and access to proxy is disabled. Change this in 'Advance Settings > Endpoint Isolation'")
+						print("\t[!]WARNING, Endpoint Isolation feature is ENABLED and access to proxy is disabled. Change this in 'Advance Settings > Endpoint Isolation'")
 
 		# Check Orbital settings
 		if (product_type == 'windows'):
@@ -175,9 +175,9 @@ def parse_agentsettings(json_agent,json_object,product_type):
 					if (str(scanner_settings['ns0:ethos']['ns0:enable']) == '0'):
 						print("\t[!]WARNING, ETHOS engine is disabled. Change this in 'Advance Settings > Engines'")
 					if (str(scanner_settings['ns0:ethos']['ns0:enable']) == '1' and str(scanner_settings['ns0:ethos']['ns0:file']) == '0'):
-						print("\t[!]WARNING, ETHOS engine is ENABLED but FILE scanning is disabled. Change this in 'Advance Settings > Engines'")
-					if (str(scanner_settings['ns0:ethos']['ns0:enable']) == '1' and str(scanner_settings['ns0:ethos']['ns0:process']) == '0'):
-						print("\t[!]WARNING, ETHOS engine is ENABLED but PROCESS scanning is disabled. Change this in 'Advance Settings > Engines'")
+						print("\t[!]WARNING, ETHOS engine is ENABLED but ON COPY/MOVE scanning is disabled. Change this in 'Advance Settings > Engines'")
+					# if (str(scanner_settings['ns0:ethos']['ns0:enable']) == '1' and str(scanner_settings['ns0:ethos']['ns0:process']) == '0'):
+					# 	print("\t[!]WARNING, ETHOS engine is ENABLED but PROCESS scanning is disabled. Change this in 'Advance Settings > Engines'")
 					if (str(scanner_settings['ns0:ssd']) == '0'):
 						print("\t[!]WARNING, Monitoring of Network Drives is diabled. Change this in 'Advance Settings > Engines'")
 					if (str(scanner_settings['ns0:spero']['ns0:enable']) == '0'):
@@ -199,13 +199,13 @@ def parse_agentsettings(json_agent,json_object,product_type):
 					# if (str(tetra_options['ns0:scancookies']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
 					# 	print("\t[!]WARNING, TETRA engine is ENABLED but COOKIE scan is disabled")
 					if (str(tetra_options['ns0:scanarchives']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-						print("\t[!]WARNING, TETRA engine is ENABLED but ARCHIVE scan is disabled")
+						print("\t[!]WARNING, TETRA engine is ENABLED but ARCHIVE scan is disabled. Change this in 'Advance Settings > TETRA'")
 					# if (str(tetra_options['ns0:scanemail']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
 					# 	print("\t[!]WARNING, TETRA engine is ENABLED but EMAIL scan is disabled")
 					if (str(tetra_options['ns0:scanpacked']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-						print("\t[!]WARNING, TETRA engine is ENABLED but PACKED FILE scan is disabled")
+						print("\t[!]WARNING, TETRA engine is ENABLED but PACKED FILE scan is disabled. Change this in 'Advance Settings > TETRA'")
 					if (str(tetra_options['ns0:deepscan']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-						print("\t[!]WARNING, TETRA engine is ENABLED but DEEP scan is disabled")
+						print("\t[!]WARNING, TETRA engine is ENABLED but DEEP scan is disabled. Change this in 'Advance Settings > TETRA'")
 				# Windows CLAMAV settings - These are not showed in the portal so we disable checks for them
 				# clam_av = scanner_settings['ns0:clamav']
 				# if (clam_av != None):
@@ -253,9 +253,9 @@ def parse_agentsettings(json_agent,json_object,product_type):
 				amsi_settings = json_agent['ns0:amsi'] if "ns0:amsi" in str(json_agent) else None
 				if (amsi_settings != None):
 					if (str(amsi_settings['ns0:enable']) == '0'):
-						print("\t[!]WARNING, AMSI Script detection engine is disabled. Change this in 'Modes and Engines > Script Protection'")
+						print("\t[!]WARNING, Script Protection engine is disabled. Change this in 'Modes and Engines > Script Protection'")
 					if (str(amsi_settings['ns0:enable']) == '1' and str(amsi_settings['ns0:mode']) == '0'):
-						print("\t[!]WARNING, AMSI Script detection enabled and engine is set to AUDIT. Change this in 'Modes and Engines > Script Protection'")
+						print("\t[!]WARNING, Script Protection is ENABLED and engine is set to AUDIT. Change this in 'Modes and Engines > Script Protection'")
 
 	# Check various scanning engines and their options for Mac or Linux
 	if (product_type == 'mac' or product_type == 'linux'):
@@ -266,15 +266,15 @@ def parse_agentsettings(json_agent,json_object,product_type):
 			cloud_ttl = cloud_settings['ns0:cache']['ns0:ttl']
 			if ( cloud_ttl != None):
 				if (int(cloud_ttl['ns0:unknown']) > 3600):
-					print("\t[!]WARNING, potentially long TTL on unknown hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:unknown'])))
+					print("\t[!]WARNING, Potentially long TTL on unknown hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:unknown'])))
 				if (int(cloud_ttl['ns0:clean']) > 3600):
-					print("\t[!]WARNING, potentially long TTL on clean hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:clean'])))
+					print("\t[!]WARNING, Potentially long TTL on clean hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:clean'])))
 				if (int(cloud_ttl['ns0:malicious']) > 3600):
-					print("\t[!]WARNING, potentially long TTL on malicious hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:malicious'])))
+					print("\t[!]WARNING, Potentially long TTL on malicious hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:malicious'])))
 				if (int(cloud_ttl['ns0:unseen']) > 3600):
-					print("\t[!]WARNING, potentially long TTL on unseen hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:unseen'])))
+					print("\t[!]WARNING, Potentially long TTL on unseen hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:unseen'])))
 				if (int(cloud_ttl['ns0:block']) > 3600):
-					print("\t[!]WARNING, potentially long TTL on block hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:block'])))
+					print("\t[!]WARNING, Potentially long TTL on block hash lookup : {}. Change this in 'Advance Settings > Cache'".format(int(cloud_ttl['ns0:block'])))
 		
 		# Check DRIVER settings
 		if validate_json_element(json_agent,'ns0:driver'):
@@ -354,6 +354,7 @@ def parse_agentsettings(json_agent,json_object,product_type):
 					print("\t[!]WARNING, HEURISTIC logs are shown to users via GUI. Change this in 'Advance Settings > Client User Interface'")
 				if(UI_settings['ns0:notification']['ns0:hide_exprev_toast'] == "0"):
 					print("\t[!]WARNING, EXPLOIT PREVENTION logs are shown to users via GUI. Change this in 'Advance Settings > Client User Interface'")
+
 
 
 # Define parser for basic policy metadata stored in header
