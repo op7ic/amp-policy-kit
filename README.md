@@ -136,8 +136,6 @@ AMP API endpoint need to be specified in the config file under 'domainIP' parame
 - [x] Windows policy handling
 - [x] Linux policy handling
 - [x] Mac policy handling
-- [x] Error parsing handling
-- [x] Security engines parsing
-- [x] Policy header parsing
+- [x] Security configuration parsing
 - [x] Policy download script
-- [x] Policy parsing online/offline
+- [x] Policy parsing in online/offline modes
