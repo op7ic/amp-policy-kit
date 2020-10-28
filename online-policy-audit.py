@@ -41,6 +41,8 @@ def validate_json_element(file_json, fields):
 		return True
 	except KeyError:
 		return False
+	except TypeError:
+		return False
 
 # Ignore insecure cert warnings (enable only if working with onsite-amp deployments)
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -93,6 +95,7 @@ def parse_agentsettings(json_agent,json_object,product_type):
 	# Check various scanning engines and their options for Windows
 	if (product_type == 'windows'):
 		print("[+] Specific Policy Misconfiguration:")
+
 		# Check TTL on cloud lookups
 		if validate_json_element(json_agent,'ns0:cloud'):
 			cloud_settings = json_agent['ns0:cloud'] if "ns0:cloud" in str(json_agent) else None
@@ -108,6 +111,13 @@ def parse_agentsettings(json_agent,json_object,product_type):
 					print("\t[!]WARNING, potentially long TTL on unseen hash lookup : {}".format(int(cloud_ttl['ns0:unseen'])))
 				if (int(cloud_ttl['ns0:block']) > 3600):
 					print("\t[!]WARNING, potentially long TTL on block hash lookup : {}".format(int(cloud_ttl['ns0:block'])))
+
+		# APDE = behavioral analytics
+		if validate_json_element(json_agent,'ns0:apde'):
+			apde_settings = json_agent['ns0:apde'] if "ns0:apde" in str(json_agent) else None
+			if ( apde_settings != None):
+				if (str(apde_settings['ns0:enable']) == '0'):
+					print("\t[!]WARNING, behavioral analytics is disabled")
 
 		# Check driver settings
 		if validate_json_element(json_agent,'ns0:driver'):
@@ -283,7 +293,9 @@ def parse_agentsettings(json_agent,json_object,product_type):
 						print("\t[!]WARNING, TETRA engine BOOT scan is disabled")
 					if (str(tetra_options['ns0:options']['ns0:ondemand']['ns0:scancookies']) == '0'):
 						print("\t[!]WARNING, TETRA engine COOKIE scan is disabled")
-
+			# TODO: 		
+			# selfprotect = process protection
+			# driver = protect process (on mac + nix)
 
 	################# OTHER PARSERS - MAC + WINDOWS + LINUX
 
@@ -341,57 +353,66 @@ def parse_agentsettings(json_agent,json_object,product_type):
 
 
 # Define parser for basic policy metadata stored in header
-def parse_header(json_header):
+def parse_header(json_header, product):
 	if(len(json_header) != 0 ):
-		if(len(json_header['ns0:policy']) > 1 ):
-			print("[+] Policy Name: {}".format(json_header['ns0:policy']['ns0:name']))
-			print("[+] Policy GUID: {}".format(json_header['ns0:policy']['ns0:uuid']))
-			print("[+] Policy Version: {}".format(json_header['ns0:policy']['ns0:serial_number']))
-			print("[+] Business GUID: {}".format(json_header['ns0:business']['ns0:uuid']))
-			timestamp = json_header['ns0:policy']['ns0:updated']
-			current_time_utc = datetime.datetime.utcnow()
-			converted_d1 = datetime.datetime.fromtimestamp(round(int(timestamp) / 1000))
-			print("[!] WARNING, Last policy change: {} ago".format((current_time_utc - converted_d1)))
+		if validate_json_element(json_header,'ns0:policy'):
+			if(len(json_header['ns0:policy']) > 1 ):
+				print("[+] Policy Name: {}".format(json_header['ns0:policy']['ns0:name']))
+				print("[+] Policy Product: {}".format(product))
+				print("[+] Policy GUID: {}".format(json_header['ns0:policy']['ns0:uuid']))
+				print("[+] Policy Version: {}".format(json_header['ns0:policy']['ns0:serial_number']))
+				print("[+] Business GUID: {}".format(json_header['ns0:business']['ns0:uuid']))
+				timestamp = json_header['ns0:policy']['ns0:updated']
+				current_time_utc = datetime.datetime.utcnow()
+				converted_d1 = datetime.datetime.fromtimestamp(round(int(timestamp) / 1000))
+				print("[!] WARNING, Last policy change: {} ago".format((current_time_utc - converted_d1)))
 		
 # Define parser for policy exclusions
 def parse_exclusions(json_exclusion):
 	if(len(json_exclusion) != 0 ):
-		if(len(json_exclusion['ns0:info']['ns0:item']) > 1 and json_exclusion['ns0:info'] != None):
-			print("[+] File Exclusions in policy: ")
-			if(len(json_exclusion['ns0:info']['ns0:item']) > 1 ):
-				for e in json_exclusion['ns0:info']['ns0:item']:
-					if ("*" in e.split("|")[4]):
-						print("\tWARNING, wildecard : {} ".format(unquote(e.split("|")[4])))
-					else:
-						print("\t", unquote(e.split("|")[4]))
-			else:
-				print("\t", str(unquote(json_exclusion['ns0:info']['ns0:item']).split("|")[4]))
+		if validate_json_element(json_exclusion['ns0:info'],'ns0:item'):
+			if(len(json_exclusion['ns0:info']['ns0:item']) > 1 and json_exclusion['ns0:info'] != None):
+				print("[+] File Exclusions in policy: ")
+				if(len(json_exclusion['ns0:info']['ns0:item']) > 1 ):
+					for e in json_exclusion['ns0:info']['ns0:item']:
+						if ("*" in e.split("|")[4]):
+							print("\tWARNING, wildecard : {} ".format(unquote(e.split("|")[4])))
+						else:
+							print("\t", unquote(e.split("|")[4]))
+				else:
+					print("\t", str(unquote(json_exclusion['ns0:info']['ns0:item']).split("|")[4]))
 		else:
 			print("[+] No path exclusions are defined")
-		
-		if("certissuer" in str(json_exclusion)):
-			print("[+] Certificate Exclusions in policy: ")
-			if(len(json_exclusion['ns0:certissuer']['ns0:name']) > 1 and json_exclusion['ns0:certissuer'] != None):
-				for e in json_exclusion['ns0:certissuer']['ns0:name']:
-					if ("*" in e):
-						print("\tWARNING, wildecard : {} ".format(unquote(e)))
-					else:
-						print("\t", unquote(e))
-			else:
-				print("\t",unquote(json_exclusion['ns0:certissuer']['ns0:name']))
+		if validate_json_element(json_exclusion,'ns0:certissuer'):
+			if("certissuer" in str(json_exclusion)):
+				print("[+] Certificate Exclusions in policy: ")
+				if(len(json_exclusion['ns0:certissuer']['ns0:name']) > 1 and json_exclusion['ns0:certissuer'] != None):
+					for e in json_exclusion['ns0:certissuer']['ns0:name']:
+						if ("*" in e):
+							print("\tWARNING, wildecard : {} ".format(unquote(e)))
+						else:
+							print("\t", unquote(e))
+				else:
+					print("\t",unquote(json_exclusion['ns0:certissuer']['ns0:name']))
 		else:
 			print("[+] No certificate issuer exclusions are defined")
 
-		if ("process" in str(json_exclusion) and json_exclusion['ns0:process'] != None):
-			print("[+] Process Exclusions in policy: ")
-			if(len(json_exclusion['ns0:process']['ns0:item']) > 1 ):
-				for e in json_exclusion['ns0:process']['ns0:item']:# TODO - fix formatting for some of this
-					if ("*" in e):
-						print("\tWARNING, wildecard : {} ".format(unquote(e)))
+		if validate_json_element(json_exclusion,'ns0:process'):
+			if ("process" in str(json_exclusion) and json_exclusion['ns0:process'] != None):
+				print("[+] Process Exclusions in policy: ")
+				# A bit hacky way of working out if there is more than 1 element in list
+				if ("', '" in str(json_exclusion['ns0:process']['ns0:item'])):
+					for e in json_exclusion['ns0:process']['ns0:item']:
+						if ("*" in e):
+							print("\tWARNING, wildecard : {} ".format(unquote(e)))
+						else:
+							print("\t", unquote(e))
+				else:
+					single_exclusion = json_exclusion['ns0:process']['ns0:item']
+					if ("*" in single_exclusion):
+						print("\tWARNING, wildecard : {} ".format(unquote(single_exclusion)))
 					else:
-						print("\t", unquote(e))
-			else:
-				print("\t",unquote(json_exclusion['ns0:process']['ns0:item']))
+						print("\t", unquote(single_exclusion))
 		else:
 			print("[+] No process exclusions are defined")
 
@@ -481,30 +502,30 @@ def main():
 	    		# Before we invoke any parser, lets make sure that there are some policies present 
 	    		if (exclusions != None):
 	    			if(policy_type == "mac"):
-	    				parse_header(policy_header)
+	    				parse_header(policy_header,policy_type)
 	    				parse_exclusions(exclusions)
 	    				if (agentconfig != None):
 	    					parse_agentsettings(agentconfig,json_object,"mac")
     				elif (policy_type == "windows"):
-    					parse_header(policy_header)
+    					parse_header(policy_header,policy_type)
     					parse_exclusions(exclusions)
     					if (agentconfig != None):
     						parse_agentsettings(agentconfig,json_object,"windows")
     				elif (policy_type == "linux"):
-    					parse_header(policy_header)
+    					parse_header(policy_header,policy_type)
     					parse_exclusions(exclusions)
     					if (agentconfig != None):
     						parse_agentsettings(agentconfig,json_object,"linux")
     			# In case exclusions are empty
     			elif (agentconfig != None):
     				if(policy_type == "mac"):
-    					parse_header(policy_header)
+    					parse_header(policy_header,policy_type)
     					parse_agentsettings(agentconfig,json_object,"mac")
     				elif (policy_type == "windows"):
-    					parse_header(policy_header)
+    					parse_header(policy_header,policy_type)
     					parse_agentsettings(agentconfig,json_object,"windows")
     				elif (policy_type == "linux"):
-    					parse_header(policy_header)
+    					parse_header(policy_header,policy_type)
     					parse_agentsettings(agentconfig,json_object,"linux")
 
 
