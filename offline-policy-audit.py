@@ -133,8 +133,6 @@ def parse_agentsettings(json_agent,json_object,product_type):
 						print("\t[!]WARNING, ETHOS engine is disabled. Change this in 'Advance Settings > Engines'")
 					if (str(scanner_settings['ns0:ethos']['ns0:enable']) == '1' and str(scanner_settings['ns0:ethos']['ns0:file']) == '0'):
 						print("\t[!]WARNING, ETHOS engine is ENABLED but ON COPY/MOVE scanning is disabled. Change this in 'Advance Settings > Engines'")
-					# if (str(scanner_settings['ns0:ethos']['ns0:enable']) == '1' and str(scanner_settings['ns0:ethos']['ns0:process']) == '0'):
-					# 	print("\t[!]WARNING, ETHOS engine is ENABLED but PROCESS scanning is disabled. Change this in 'Advance Settings > Engines'")
 					if (str(scanner_settings['ns0:ssd']) == '0'):
 						print("\t[!]WARNING, Monitoring of Network Drives is diabled. Change this in 'Advance Settings > Engines'")
 					if (str(scanner_settings['ns0:spero']['ns0:enable']) == '0'):
@@ -145,47 +143,12 @@ def parse_agentsettings(json_agent,json_object,product_type):
 				# Parse Tetra options
 				tetra_options = scanner_settings['ns0:tetra']['ns0:options']['ns0:ondemand']
 				if (tetra_options != None):
-					# if (str(tetra_options['ns0:scansystem']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-					# 	print("\t[!]WARNING, TETRA engine is ENABLED but SYSTEM scan is disabled")
-					# if (str(tetra_options['ns0:scanregistry']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-					# 	print("\t[!]WARNING, TETRA engine is ENABLED but REGISTRY scan is disabled")
-					# if (str(tetra_options['ns0:scanprocesses']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-					# 	print("\t[!]WARNING, TETRA engine is ENABLED but PROCESS scan is disabled")
-					# if (str(tetra_options['ns0:scanBoot']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-					# 	print("\t[!]WARNING, TETRA engine is ENABLED but BOOT scan is disabled")
-					# if (str(tetra_options['ns0:scancookies']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-					# 	print("\t[!]WARNING, TETRA engine is ENABLED but COOKIE scan is disabled")
 					if (str(tetra_options['ns0:scanarchives']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
 						print("\t[!]WARNING, TETRA engine is ENABLED but ARCHIVE scan is disabled. Change this in 'Advance Settings > TETRA'")
-					# if (str(tetra_options['ns0:scanemail']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-					# 	print("\t[!]WARNING, TETRA engine is ENABLED but EMAIL scan is disabled")
 					if (str(tetra_options['ns0:scanpacked']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
 						print("\t[!]WARNING, TETRA engine is ENABLED but PACKED FILE scan is disabled. Change this in 'Advance Settings > TETRA'")
 					if (str(tetra_options['ns0:deepscan']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
 						print("\t[!]WARNING, TETRA engine is ENABLED but DEEP scan is disabled. Change this in 'Advance Settings > TETRA'")
-				# Windows CLAMAV settings - These are not showed in the portal so we disable checks for them
-				# clam_av = scanner_settings['ns0:clamav']
-				# if (clam_av != None):
-				# 	if (str(clam_av['ns0:enable']) == '2'):
-				# 		print("\t[!]WARNING, CLAMAV engine is disabled")
-				# 	if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:scanarchives']) == '0'):
-				# 		print("\t[!]WARNING, CLAMAV engine is ENABLED but ARCHIVE scanning is disabled")
-				# 	if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:scanpacked']) == '0'):
-				# 		print("\t[!]WARNING, CLAMAV engine is ENABLED but PACKED binary scanning is disabled")
-				# 	if (str(clam_av['ns0:enable']) == '1'): # TODO: Check this value !
-				# 		print("\t[!]WARNING, CLAMAV engine in ONDEMAND mode is disabled")
-				# 	if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:ondemand']['ns0:scanarchives']) == '0'):
-				# 		print("\t[!]WARNING, CLAMAV engine is ENABLED but ARCHIVE scanning is disabled in ONDEMAND mode")
-				# 	if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:ondemand']['ns0:scanpacked']) == '0'):
-				# 		print("\t[!]WARNING, CLAMAV engine is ENABLED but PACKED binary scanning is disabled in ONDEMAND mode")
-				# 	if (str(clam_av['ns0:options']['ns0:onscan']['ns0:enabled'] == '0')):
-				# 		print("\t[!]WARNING, CLAMAV engine is disabled in ONSCAN mode")
-				# 	if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:onscan']['ns0:scanarchives']) == '0'):
-				# 		print("\t[!]WARNING, CLAMAV engine is ENABLED but ARCHIVE scanning is disabled in ONSCAN mode")
-				# 	if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:onscan']['ns0:scanpacked']) == '0'):
-				# 		print("\t[!]WARNING, CLAMAV engine is ENABLED but PACKED binary scanning is disabled in ONSCAN mode")
-				# 	if (str(clam_av['ns0:updater']['ns0:enable']) == '0'):
-				# 		print("\t[!]WARNING, CLAMAV engine updater disabled")
 
 				# Parse Malicious Activity Protection settings
 				heuristic = json_agent['ns0:heuristic'] if "ns0:heuristic" in str(json_agent) else None
