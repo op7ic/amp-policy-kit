@@ -47,6 +47,7 @@ This script will perform an online audit on all existing policies from AMP conso
 - Long TTL for hash checks
 - Disabled Network Flow Monitoring (NFM)
 - Policy not updated for 12 or more months 
+- AMP installation not protected by password
 
 Please edit [config.txt](config.txt) and add appropriate API keys.
 

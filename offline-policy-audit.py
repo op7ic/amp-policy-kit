@@ -53,6 +53,9 @@ def parse_agentsettings(json_agent,json_object,product_type):
 	if (product_type == 'windows'):
 		print("[+] Specific Policy Misconfiguration:")
 
+		if not validate_json_element(json_agent['ns0:control'],'ns0:passwordex'):
+			print("\t[!]WARNING, AMP installation is not protected by password. Change this in 'Administrative Features > Enable Connector Protection'")
+
 		# Check TTL on cloud lookups
 		if validate_json_element(json_agent,'ns0:cloud'):
 			cloud_settings = json_agent['ns0:cloud'] if "ns0:cloud" in str(json_agent) else None
@@ -74,22 +77,33 @@ def parse_agentsettings(json_agent,json_object,product_type):
 			apde_settings = json_agent['ns0:apde'] if "ns0:apde" in str(json_agent) else None
 			if ( apde_settings != None):
 				if (str(apde_settings['ns0:enable']) == '0'):
-					print("\t[!]WARNING, behavioral analytics is disabled. Change this in 'Modes and Engines > Behavioral Protection'")
+					print("\t[!]WARNING, Behavioral Protection is disabled. Change this in 'Modes and Engines > Behavioral Protection'")
+				if (str(apde_settings['ns0:enable']) == '1' and str(apde_settings['ns0:mode']) == '0'):
+					print("\t[!]WARNING, Behavioral Protection is set to AUDIT. Change this in 'Modes and Engines > Behavioral Protection'")
 
 		# Check driver settings
 		if validate_json_element(json_agent,'ns0:driver'):
 			driver_settings = json_agent['ns0:driver'] if "ns0:driver" in str(json_agent) else None
 			if ( driver_settings != None):
-				if (str(driver_settings['ns0:blockexecqaction']) == '0'):
-					print("\t[!]WARNING, application blocking is set to AUDIT mode")
+				if (str(driver_settings['ns0:blockexecqaction']) == '0' and str(driver_settings['ns0:protmode']['ns0:qaction']) == '0'):
+					print("\t[!]WARNING, FILE protection is set to AUDIT. Change this in 'Modes and Engines > File'")
+
 				if (str(driver_settings['ns0:protmode']['ns0:file']) == '0'):
 					print("\t[!]WARNING, Monitor File Copies and Moves Execution is DISABLED. Change this in 'Advance Settings > File and Process Scan'")
-				if (str(driver_settings['ns0:protmode']['ns0:qaction']) == '0'):
-					print("\t[!]WARNING, AUDIT policy is enabled for malicious files")
-				if (str(driver_settings['ns0:protmode']['ns0:active']) == '0'):
-					print("\t[!]WARNING, file monitoring is in AUDIT mode only")
+
 				if (str(driver_settings['ns0:protmode']['ns0:process']) == '0'):
 					print("\t[!]WARNING, Monitor Process Execution is DISABLED. Change this in 'Advance Settings > File and Process Scan'")
+
+				if (str(driver_settings['ns0:selfprotect']['ns0:spp_qaction']) == '0'):
+					print("\t[!]WARNING, System Process Protection is set to AUDIT. Change this in 'Modes and Engines > Malicious Activity Protection > System Process Protection'")
+
+				if (str(driver_settings['ns0:selfprotect']['ns0:spp']) == '0' and str(driver_settings['ns0:selfprotect']['ns0:mkp']) == '0' and str(driver_settings['ns0:selfprotect']['ns0:sde']) == '0' and str(driver_settings['ns0:selfprotect']['ns0:spp_qaction']) == '1'):
+					print("\t[!]WARNING, System Process Protection is set to DISABLED. Change this in 'Modes and Engines > Malicious Activity Protection > System Process Protection'")
+
+				if (str(driver_settings['ns0:protmode']['ns0:activeexec']) == '0'):
+					print("\t[!]WARNING, On Execute Mode is set to PASSIVE. Change this in 'Advance Settings > File and Process Scan'")
+
+
 
 		# Check agent isolation
 		if (product_type == 'windows'):
@@ -110,7 +124,7 @@ def parse_agentsettings(json_agent,json_object,product_type):
 				if(orbital_settings != None):
 					if(str(orbital_settings['ns0:enablemsi']) == '0'):
 						print("\t[!]WARNING, ORBITAL is disabled. Change this in 'Advance Settings > Orbital'")
-
+		# Check scanner settings
 		if (product_type == 'windows'):
 			if validate_json_element(json_agent,'ns0:scansettings'):
 				scanner_settings = json_agent['ns0:scansettings'] if "ns0:scansettings" in json_agent else None
@@ -131,70 +145,74 @@ def parse_agentsettings(json_agent,json_object,product_type):
 				# Parse Tetra options
 				tetra_options = scanner_settings['ns0:tetra']['ns0:options']['ns0:ondemand']
 				if (tetra_options != None):
-					if (str(tetra_options['ns0:scansystem']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-						print("\t[!]WARNING, TETRA engine is ENABLED but SYSTEM scan is disabled")
-					if (str(tetra_options['ns0:scanregistry']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-						print("\t[!]WARNING, TETRA engine is ENABLED but REGISTRY scan is disabled")
-					if (str(tetra_options['ns0:scanprocesses']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-						print("\t[!]WARNING, TETRA engine is ENABLED but PROCESS scan is disabled")
-					if (str(tetra_options['ns0:scanBoot']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-						print("\t[!]WARNING, TETRA engine is ENABLED but BOOT scan is disabled")
-					if (str(tetra_options['ns0:scancookies']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-						print("\t[!]WARNING, TETRA engine is ENABLED but COOKIE scan is disabled")
+					# if (str(tetra_options['ns0:scansystem']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
+					# 	print("\t[!]WARNING, TETRA engine is ENABLED but SYSTEM scan is disabled")
+					# if (str(tetra_options['ns0:scanregistry']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
+					# 	print("\t[!]WARNING, TETRA engine is ENABLED but REGISTRY scan is disabled")
+					# if (str(tetra_options['ns0:scanprocesses']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
+					# 	print("\t[!]WARNING, TETRA engine is ENABLED but PROCESS scan is disabled")
+					# if (str(tetra_options['ns0:scanBoot']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
+					# 	print("\t[!]WARNING, TETRA engine is ENABLED but BOOT scan is disabled")
+					# if (str(tetra_options['ns0:scancookies']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
+					# 	print("\t[!]WARNING, TETRA engine is ENABLED but COOKIE scan is disabled")
 					if (str(tetra_options['ns0:scanarchives']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
 						print("\t[!]WARNING, TETRA engine is ENABLED but ARCHIVE scan is disabled")
-					if (str(tetra_options['ns0:scanemail']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-						print("\t[!]WARNING, TETRA engine is ENABLED but EMAIL scan is disabled")
+					# if (str(tetra_options['ns0:scanemail']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
+					# 	print("\t[!]WARNING, TETRA engine is ENABLED but EMAIL scan is disabled")
 					if (str(tetra_options['ns0:scanpacked']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
 						print("\t[!]WARNING, TETRA engine is ENABLED but PACKED FILE scan is disabled")
 					if (str(tetra_options['ns0:deepscan']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
 						print("\t[!]WARNING, TETRA engine is ENABLED but DEEP scan is disabled")
-				# Windows CLAMAV settings
-				clam_av = scanner_settings['ns0:clamav']
-				if (clam_av != None):
-					if (str(clam_av['ns0:enable']) == '2'):
-						print("\t[!]WARNING, CLAMAV engine is disabled")
-					if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:scanarchives']) == '0'):
-						print("\t[!]WARNING, CLAMAV engine is ENABLED but ARCHIVE scanning is disabled")
-					if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:scanpacked']) == '0'):
-						print("\t[!]WARNING, CLAMAV engine is ENABLED but PACKED binary scanning is disabled")
-					if (str(clam_av['ns0:enable']) == '1'): # TODO: Check this value !
-						print("\t[!]WARNING, CLAMAV engine in ONDEMAND mode is disabled")
-					if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:ondemand']['ns0:scanarchives']) == '0'):
-						print("\t[!]WARNING, CLAMAV engine is ENABLED but ARCHIVE scanning is disabled in ONDEMAND mode")
-					if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:ondemand']['ns0:scanpacked']) == '0'):
-						print("\t[!]WARNING, CLAMAV engine is ENABLED but PACKED binary scanning is disabled in ONDEMAND mode")
-					if (str(clam_av['ns0:options']['ns0:onscan']['ns0:enabled'] == '0')):
-						print("\t[!]WARNING, CLAMAV engine is disabled in ONSCAN mode")
-					if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:onscan']['ns0:scanarchives']) == '0'):
-						print("\t[!]WARNING, CLAMAV engine is ENABLED but ARCHIVE scanning is disabled in ONSCAN mode")
-					if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:onscan']['ns0:scanpacked']) == '0'):
-						print("\t[!]WARNING, CLAMAV engine is ENABLED but PACKED binary scanning is disabled in ONSCAN mode")
-					if (str(clam_av['ns0:updater']['ns0:enable']) == '0'):
-						print("\t[!]WARNING, CLAMAV engine updater disabled")
+				# Windows CLAMAV settings - These are not showed in the portal so we disable checks for them
+				# clam_av = scanner_settings['ns0:clamav']
+				# if (clam_av != None):
+				# 	if (str(clam_av['ns0:enable']) == '2'):
+				# 		print("\t[!]WARNING, CLAMAV engine is disabled")
+				# 	if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:scanarchives']) == '0'):
+				# 		print("\t[!]WARNING, CLAMAV engine is ENABLED but ARCHIVE scanning is disabled")
+				# 	if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:scanpacked']) == '0'):
+				# 		print("\t[!]WARNING, CLAMAV engine is ENABLED but PACKED binary scanning is disabled")
+				# 	if (str(clam_av['ns0:enable']) == '1'): # TODO: Check this value !
+				# 		print("\t[!]WARNING, CLAMAV engine in ONDEMAND mode is disabled")
+				# 	if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:ondemand']['ns0:scanarchives']) == '0'):
+				# 		print("\t[!]WARNING, CLAMAV engine is ENABLED but ARCHIVE scanning is disabled in ONDEMAND mode")
+				# 	if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:ondemand']['ns0:scanpacked']) == '0'):
+				# 		print("\t[!]WARNING, CLAMAV engine is ENABLED but PACKED binary scanning is disabled in ONDEMAND mode")
+				# 	if (str(clam_av['ns0:options']['ns0:onscan']['ns0:enabled'] == '0')):
+				# 		print("\t[!]WARNING, CLAMAV engine is disabled in ONSCAN mode")
+				# 	if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:onscan']['ns0:scanarchives']) == '0'):
+				# 		print("\t[!]WARNING, CLAMAV engine is ENABLED but ARCHIVE scanning is disabled in ONSCAN mode")
+				# 	if (str(clam_av['ns0:enable']) == '1' and str(clam_av['ns0:options']['ns0:onscan']['ns0:scanpacked']) == '0'):
+				# 		print("\t[!]WARNING, CLAMAV engine is ENABLED but PACKED binary scanning is disabled in ONSCAN mode")
+				# 	if (str(clam_av['ns0:updater']['ns0:enable']) == '0'):
+				# 		print("\t[!]WARNING, CLAMAV engine updater disabled")
 
-				# Parse heuristic settings
+				# Parse Malicious Activity Protection settings
 				heuristic = json_agent['ns0:heuristic'] if "ns0:heuristic" in str(json_agent) else None
 				if (heuristic != None):
+					# Values - enabled & qaction 1 = 0 audit, enabled & qaction 1 = Quarantine, enabled & qaction = 2 block
 					if (str(heuristic['ns0:enable']) == '0'):
-						print("\t[!]WARNING, Exploit Heuristic is disabled. Change this in 'Modes and Engines > '")
+						print("\t[!]WARNING, Malicious Activity Protection is DISABLED. Change this in 'Modes and Engines > Malicious Activity Protection'")
 					if (str(heuristic['ns0:enable']) == '1' and str(heuristic['ns0:qaction']) == '0'):
-						print("\t[!]WARNING, Exploit Heuristic is enabled and set to AUDIT mode")
+						print("\t[!]WARNING, Malicious Activity Protection is ENABLED but set to AUDIT mode. Change this in 'Modes and Engines > Malicious Activity Protection'")
+					if (str(heuristic['ns0:enable']) == '1' and str(heuristic['ns0:qaction']) == '1'):
+						print("\t[!]WARNING, Malicious Activity Protection is ENABLED but set to QUARANTINE mode. Change this in 'Modes and Engines > Malicious Activity Protection'")
 
 				# Parse exploit prevention settings
 				exploit_prevention = json_agent['ns0:exprev']['ns0:enable'] if "ns0:exprev" in str(json_agent) else None
 				if (exploit_prevention != None):
 					if (str(exploit_prevention) == '0'):
 						print("\t[!]WARNING, Exploit Prevention is disabled. Change this in 'Modes and Engines > Exploit Protection'")
+					if (str(exploit_prevention) == '1' and str(json_agent['ns0:exprev']['ns0:v4']['ns0:options'] == '0x0000033B')):
+						print("\t[!]WARNING, Exploit Prevention is set to AUDIT. Change this in 'Modes and Engines > Exploit Protection'")
 
 				# Parse AMSI engine settings
 				amsi_settings = json_agent['ns0:amsi'] if "ns0:amsi" in str(json_agent) else None
 				if (amsi_settings != None):
 					if (str(amsi_settings['ns0:enable']) == '0'):
 						print("\t[!]WARNING, AMSI Script detection engine is disabled. Change this in 'Modes and Engines > Script Protection'")
-					if (str(amsi_settings['ns0:mode']) == '0' and str(amsi_settings['ns0:enable']) == '1'):
+					if (str(amsi_settings['ns0:enable']) == '1' and str(amsi_settings['ns0:mode']) == '0'):
 						print("\t[!]WARNING, AMSI Script detection enabled and engine is set to AUDIT. Change this in 'Modes and Engines > Script Protection'")
-
 
 	# Check various scanning engines and their options for Mac or Linux
 	if (product_type == 'mac' or product_type == 'linux'):
@@ -277,7 +295,7 @@ def parse_agentsettings(json_agent,json_object,product_type):
 			if(UI_settings != None):
 				if(UI_settings['ns0:exclusions']['ns0:display'] == "1"):
 					print("\t[!]WARNING, EXCLUSIONS are shown to users via GUI. Change this in 'Advance Settings > Client User Interface'")
-				if(UI_settings['ns0:notification']['ns0:cloud'] == "0"):
+				if(UI_settings['ns0:notification']['ns0:cloud'] == "1"):
 					print("\t[!]WARNING, CLOUD notification are shown to users via GUI. Change this in 'Advance Settings > Client User Interface'")
 				if(UI_settings['ns0:notification']['ns0:hide_file_toast'] == "0"):
 					print("\t[!]WARNING, FILE notification are shown to users via GUI. Change this in 'Advance Settings > Client User Interface'")
@@ -436,6 +454,7 @@ def main():
 				parse_agentsettings(agentconfig,json_object,policy_type)
 
 	except KeyError as e:
+		print(repr(e))
 		print("\t[!] No security settings present (could be Network-only) policy")
 		sys.exit(1)
 
