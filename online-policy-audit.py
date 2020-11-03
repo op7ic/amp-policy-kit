@@ -146,8 +146,6 @@ def parse_agentsettings(json_agent,json_object,product_type):
 				if (str(driver_settings['ns0:protmode']['ns0:activeexec']) == '0'):
 					print("\t[!]WARNING, On Execute Mode is set to PASSIVE. Change this in 'Advance Settings > File and Process Scan'")
 
-
-
 		# Check agent isolation
 		if (product_type == 'windows'):
 			if validate_json_element(json_agent,'ns0:endpointisolation'):
@@ -160,15 +158,14 @@ def parse_agentsettings(json_agent,json_object,product_type):
 					if (str(agent_isolation_settings['ns0:enable']) == '1' and str(agent_isolation_settings['ns0:allowproxy']) == '0'):
 						print("\t[!]WARNING, Endpoint Isolation feature is ENABLED and access to proxy is disabled. Change this in 'Advance Settings > Endpoint Isolation'")
 
-		# Check Orbital settings
-		if (product_type == 'windows'):
+			# Check Orbital settings
 			if validate_json_element(json_object['ns0:Signature']['ns0:Object']['ns0:config'],'ns0:orbital'):
 				orbital_settings = json_object['ns0:Signature']['ns0:Object']['ns0:config']['ns0:orbital'] if "ns0:enablemsi" in json_object['ns0:Signature']['ns0:Object']['ns0:config']['ns0:orbital'] else None
 				if(orbital_settings != None):
 					if(str(orbital_settings['ns0:enablemsi']) == '0'):
 						print("\t[!]WARNING, ORBITAL is disabled. Change this in 'Advance Settings > Orbital'")
-		# Check scanner settings
-		if (product_type == 'windows'):
+		
+			# Check scanner settings
 			if validate_json_element(json_agent,'ns0:scansettings'):
 				scanner_settings = json_agent['ns0:scansettings'] if "ns0:scansettings" in json_agent else None
 				if (scanner_settings != None):
