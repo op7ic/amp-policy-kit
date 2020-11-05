@@ -147,75 +147,74 @@ def parse_agentsettings(json_agent,json_object,product_type):
 					print("\t[!]WARNING, On Execute Mode is set to PASSIVE. Change this in 'Advance Settings > File and Process Scan'")
 
 		# Check agent isolation
-		if (product_type == 'windows'):
-			if validate_json_element(json_agent,'ns0:endpointisolation'):
-				agent_isolation_settings = json_agent['ns0:endpointisolation'] if "ns0:endpointisolation" in json_agent else None
-				if(agent_isolation_settings != None):
-					if (str(agent_isolation_settings['ns0:enable']) == '0'):
-						print("\t[!]WARNING, Endpoint Isolation feature is disabled. Change this in 'Advance Settings > Endpoint Isolation'")
-					if (str(agent_isolation_settings['ns0:enable']) == '1' and str(agent_isolation_settings['ns0:allowproxy']) == '1'):
-						print("\t[!]WARNING, Endpoint Isolation feature is ENABLED and access to proxy is enabled. Change this in 'Advance Settings > Endpoint Isolation'")
-					if (str(agent_isolation_settings['ns0:enable']) == '1' and str(agent_isolation_settings['ns0:allowproxy']) == '0'):
-						print("\t[!]WARNING, Endpoint Isolation feature is ENABLED and access to proxy is disabled. Change this in 'Advance Settings > Endpoint Isolation'")
+		if validate_json_element(json_agent,'ns0:endpointisolation'):
+			agent_isolation_settings = json_agent['ns0:endpointisolation'] if "ns0:endpointisolation" in json_agent else None
+			if(agent_isolation_settings != None):
+				if (str(agent_isolation_settings['ns0:enable']) == '0'):
+					print("\t[!]WARNING, Endpoint Isolation feature is disabled. Change this in 'Advance Settings > Endpoint Isolation'")
+				if (str(agent_isolation_settings['ns0:enable']) == '1' and str(agent_isolation_settings['ns0:allowproxy']) == '1'):
+					print("\t[!]WARNING, Endpoint Isolation feature is ENABLED and access to proxy is enabled. Change this in 'Advance Settings > Endpoint Isolation'")
+				if (str(agent_isolation_settings['ns0:enable']) == '1' and str(agent_isolation_settings['ns0:allowproxy']) == '0'):
+					print("\t[!]WARNING, Endpoint Isolation feature is ENABLED and access to proxy is disabled. Change this in 'Advance Settings > Endpoint Isolation'")
 
-			# Check Orbital settings
-			if validate_json_element(json_object['ns0:Signature']['ns0:Object']['ns0:config'],'ns0:orbital'):
-				orbital_settings = json_object['ns0:Signature']['ns0:Object']['ns0:config']['ns0:orbital'] if "ns0:enablemsi" in json_object['ns0:Signature']['ns0:Object']['ns0:config']['ns0:orbital'] else None
-				if(orbital_settings != None):
-					if(str(orbital_settings['ns0:enablemsi']) == '0'):
-						print("\t[!]WARNING, ORBITAL is disabled. Change this in 'Advance Settings > Orbital'")
-		
-			# Check scanner settings
-			if validate_json_element(json_agent,'ns0:scansettings'):
-				scanner_settings = json_agent['ns0:scansettings'] if "ns0:scansettings" in json_agent else None
-				if (scanner_settings != None):
-					if (str(scanner_settings['ns0:ethos']['ns0:enable']) == '0'):
-						print("\t[!]WARNING, ETHOS engine is disabled. Change this in 'Advance Settings > Engines'")
-					if (str(scanner_settings['ns0:ethos']['ns0:enable']) == '1' and str(scanner_settings['ns0:ethos']['ns0:file']) == '0'):
-						print("\t[!]WARNING, ETHOS engine is ENABLED but ON COPY/MOVE scanning is disabled. Change this in 'Advance Settings > Engines'")
-					if (str(scanner_settings['ns0:ssd']) == '0'):
-						print("\t[!]WARNING, Monitoring of Network Drives is diabled. Change this in 'Advance Settings > Engines'")
-					if (str(scanner_settings['ns0:spero']['ns0:enable']) == '0'):
-						print("\t[!]WARNING, SPERO engine is disabled. Change this in 'Advance Settings > Engines'")
-					if (str(scanner_settings['ns0:tetra']['ns0:enable']) == '0'):
-						print("\t[!]WARNING, TETRA engine is disabled. Change this in 'Advance Settings > TETRA'")
+		# Check Orbital settings
+		if validate_json_element(json_object['ns0:Signature']['ns0:Object']['ns0:config'],'ns0:orbital'):
+			orbital_settings = json_object['ns0:Signature']['ns0:Object']['ns0:config']['ns0:orbital'] if "ns0:enablemsi" in json_object['ns0:Signature']['ns0:Object']['ns0:config']['ns0:orbital'] else None
+			if(orbital_settings != None):
+				if(str(orbital_settings['ns0:enablemsi']) == '0'):
+					print("\t[!]WARNING, ORBITAL is disabled. Change this in 'Advance Settings > Orbital'")
+	
+		# Check scanner settings
+		if validate_json_element(json_agent,'ns0:scansettings'):
+			scanner_settings = json_agent['ns0:scansettings'] if "ns0:scansettings" in json_agent else None
+			if (scanner_settings != None):
+				if (str(scanner_settings['ns0:ethos']['ns0:enable']) == '0'):
+					print("\t[!]WARNING, ETHOS engine is disabled. Change this in 'Advance Settings > Engines'")
+				if (str(scanner_settings['ns0:ethos']['ns0:enable']) == '1' and str(scanner_settings['ns0:ethos']['ns0:file']) == '0'):
+					print("\t[!]WARNING, ETHOS engine is ENABLED but ON COPY/MOVE scanning is disabled. Change this in 'Advance Settings > Engines'")
+				if (str(scanner_settings['ns0:ssd']) == '0'):
+					print("\t[!]WARNING, Monitoring of Network Drives is diabled. Change this in 'Advance Settings > Engines'")
+				if (str(scanner_settings['ns0:spero']['ns0:enable']) == '0'):
+					print("\t[!]WARNING, SPERO engine is disabled. Change this in 'Advance Settings > Engines'")
+				if (str(scanner_settings['ns0:tetra']['ns0:enable']) == '0'):
+					print("\t[!]WARNING, TETRA engine is disabled. Change this in 'Advance Settings > TETRA'")
 
-				# Parse Tetra options
-				tetra_options = scanner_settings['ns0:tetra']['ns0:options']['ns0:ondemand']
-				if (tetra_options != None):
-					if (str(tetra_options['ns0:scanarchives']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-						print("\t[!]WARNING, TETRA engine is ENABLED but ARCHIVE scan is disabled. Change this in 'Advance Settings > TETRA'")
-					if (str(tetra_options['ns0:scanpacked']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-						print("\t[!]WARNING, TETRA engine is ENABLED but PACKED FILE scan is disabled. Change this in 'Advance Settings > TETRA'")
-					if (str(tetra_options['ns0:deepscan']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
-						print("\t[!]WARNING, TETRA engine is ENABLED but DEEP scan is disabled. Change this in 'Advance Settings > TETRA'")
+			# Parse Tetra options
+			tetra_options = scanner_settings['ns0:tetra']['ns0:options']['ns0:ondemand']
+			if (tetra_options != None):
+				if (str(tetra_options['ns0:scanarchives']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
+					print("\t[!]WARNING, TETRA engine is ENABLED but ARCHIVE scan is disabled. Change this in 'Advance Settings > TETRA'")
+				if (str(tetra_options['ns0:scanpacked']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
+					print("\t[!]WARNING, TETRA engine is ENABLED but PACKED FILE scan is disabled. Change this in 'Advance Settings > TETRA'")
+				if (str(tetra_options['ns0:deepscan']) == '0' and str(scanner_settings['ns0:tetra']['ns0:enable']) == '1'):
+					print("\t[!]WARNING, TETRA engine is ENABLED but DEEP scan is disabled. Change this in 'Advance Settings > TETRA'")
 
-				# Parse Malicious Activity Protection settings
-				heuristic = json_agent['ns0:heuristic'] if "ns0:heuristic" in str(json_agent) else None
-				if (heuristic != None):
-					# Values - enabled & qaction 1 = 0 audit, enabled & qaction 1 = Quarantine, enabled & qaction = 2 block
-					if (str(heuristic['ns0:enable']) == '0'):
-						print("\t[!]WARNING, Malicious Activity Protection is DISABLED. Change this in 'Modes and Engines > Malicious Activity Protection'")
-					if (str(heuristic['ns0:enable']) == '1' and str(heuristic['ns0:qaction']) == '0'):
-						print("\t[!]WARNING, Malicious Activity Protection is ENABLED but set to AUDIT mode. Change this in 'Modes and Engines > Malicious Activity Protection'")
-					if (str(heuristic['ns0:enable']) == '1' and str(heuristic['ns0:qaction']) == '1'):
-						print("\t[!]WARNING, Malicious Activity Protection is ENABLED but set to QUARANTINE mode. Change this in 'Modes and Engines > Malicious Activity Protection'")
+			# Parse Malicious Activity Protection settings
+			heuristic = json_agent['ns0:heuristic'] if "ns0:heuristic" in str(json_agent) else None
+			if (heuristic != None):
+				# Values - enabled & qaction 1 = 0 audit, enabled & qaction 1 = Quarantine, enabled & qaction = 2 block
+				if (str(heuristic['ns0:enable']) == '0'):
+					print("\t[!]WARNING, Malicious Activity Protection is DISABLED. Change this in 'Modes and Engines > Malicious Activity Protection'")
+				if (str(heuristic['ns0:enable']) == '1' and str(heuristic['ns0:qaction']) == '0'):
+					print("\t[!]WARNING, Malicious Activity Protection is ENABLED but set to AUDIT mode. Change this in 'Modes and Engines > Malicious Activity Protection'")
+				if (str(heuristic['ns0:enable']) == '1' and str(heuristic['ns0:qaction']) == '1'):
+					print("\t[!]WARNING, Malicious Activity Protection is ENABLED but set to QUARANTINE mode. Change this in 'Modes and Engines > Malicious Activity Protection'")
 
-				# Parse exploit prevention settings
-				exploit_prevention = json_agent['ns0:exprev']['ns0:enable'] if "ns0:exprev" in str(json_agent) else None
-				if (exploit_prevention != None):
-					if (str(exploit_prevention) == '0'):
-						print("\t[!]WARNING, Exploit Prevention is disabled. Change this in 'Modes and Engines > Exploit Protection'")
-					if (str(exploit_prevention) == '1' and str(json_agent['ns0:exprev']['ns0:v4']['ns0:options'] == '0x0000033B')):
-						print("\t[!]WARNING, Exploit Prevention is set to AUDIT. Change this in 'Modes and Engines > Exploit Protection'")
+			# Parse exploit prevention settings
+			exploit_prevention = json_agent['ns0:exprev']['ns0:enable'] if "ns0:exprev" in str(json_agent) else None
+			if (exploit_prevention != None):
+				if (str(exploit_prevention) == '0'):
+					print("\t[!]WARNING, Exploit Prevention is disabled. Change this in 'Modes and Engines > Exploit Protection'")
+				if (str(exploit_prevention) == '1' and str(json_agent['ns0:exprev']['ns0:v4']['ns0:options'] == '0x0000033B')):
+					print("\t[!]WARNING, Exploit Prevention is set to AUDIT. Change this in 'Modes and Engines > Exploit Protection'")
 
-				# Parse AMSI engine settings
-				amsi_settings = json_agent['ns0:amsi'] if "ns0:amsi" in str(json_agent) else None
-				if (amsi_settings != None):
-					if (str(amsi_settings['ns0:enable']) == '0'):
-						print("\t[!]WARNING, Script Protection engine is disabled. Change this in 'Modes and Engines > Script Protection'")
-					if (str(amsi_settings['ns0:enable']) == '1' and str(amsi_settings['ns0:mode']) == '0'):
-						print("\t[!]WARNING, Script Protection is ENABLED and engine is set to AUDIT. Change this in 'Modes and Engines > Script Protection'")
+			# Parse AMSI engine settings
+			amsi_settings = json_agent['ns0:amsi'] if "ns0:amsi" in str(json_agent) else None
+			if (amsi_settings != None):
+				if (str(amsi_settings['ns0:enable']) == '0'):
+					print("\t[!]WARNING, Script Protection engine is disabled. Change this in 'Modes and Engines > Script Protection'")
+				if (str(amsi_settings['ns0:enable']) == '1' and str(amsi_settings['ns0:mode']) == '0'):
+					print("\t[!]WARNING, Script Protection is ENABLED and engine is set to AUDIT. Change this in 'Modes and Engines > Script Protection'")
 
 	# Check various scanning engines and their options for Mac or Linux
 	if (product_type == 'mac' or product_type == 'linux'):
