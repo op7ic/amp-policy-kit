@@ -93,9 +93,6 @@ Choose the appropriate endpoint for your region:
 ### 🟡 Warnings  
 - **Audit-Only Security Modes** - Detection without blocking
 - **Disabled Security Engines** - TETRA, SPERO, ETHOS off
-- **SSL Verification Disabled** - Insecure connections
-- **Broad Exclusions** - Overly permissive exclusions
-- **Multiple Wildcard Exclusions** - Risky exclusion patterns
 - **No Scheduled Scans Configured** - Missing proactive scanning
 - **Infrequent Scheduled Scans** - Monthly or less frequent scanning
 
