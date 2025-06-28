@@ -1,142 +1,187 @@
-# amp-policy-kit
+# Cisco Secure Endpoint Policy Kit
 
-This repository contains scripts designed to help in policy assessment of existing Cisco AMP installation in either cloud or on-prem mode.
+This repository contains comprehensive scripts for security assessment of Cisco Secure Endpoint (formerly AMP for Endpoints) policies in both cloud and on-premises deployments.
 
 ## Prerequisites 
 
-Install the following prerequsites:
-
-* Python3
-* [xmltodict](https://pypi.org/project/xmltodict/)
-* [beautifulsoup4](https://pypi.org/project/beautifulsoup4/)
-
-The following command line should take care of prerequisites on Debian/Ubuntu/WSL:
-```
-pip3 install xmltodict beautifulsoup4
+```bash
+pip3 install xmltodict beautifulsoup4 requests
 ```
 
-## download-policy-xml.py
+**Supported Python Versions:** 3.6+   
+**Supported API Versions:** v1, v0
 
-This script dumps all existing policies from AMP console in XML format to specified folder. Please edit [config.txt](config.txt) and add appropriate API keys.
+## 📊 Available Scripts
 
-Usage:
+### Features
+
+- **Per-Policy HTML Reports** with visual severity indicators
+- **Multiple Output Formats** (JSON, HTML, CSV)
+- **Parallel Processing** for faster auditing
+- **Bulk Policy Downloads** for comprehensive analysis
+- **Automatic File Organization** by policy type
+- **API Rate Limiting** handling
+- **Error Recovery** and retry logic
+
+### 🔍 Comprehensive Auditing (Recommended)
+
+#### `online-policy-audit.py`
+**Advanced online policy auditing with detailed per-policy reports**
+
+```bash
+python3 online-policy-audit.py -c config.txt -o audit_results/
+python3 online-policy-audit.py -c config.txt -o audit_results/ --formats json html csv
 ```
-usage: download-policy-xml.py [-h] -c FILE -o OUTOUT_FOLDER
+#### `offline-policy-audit.py`
+**Comprehensive offline analysis of individual policy files**
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -c FILE, --config FILE
-                        path to config file
-  -o OUTOUT_FOLDER, --output OUTOUT_FOLDER
-                        path to output folder
-```
+```bash
+# Console output only
+python3 offline-policy-audit.py -i policy.xml
 
-How to invoke:
-```
-python3 download-policy-xml.py --config /tmp/config.txt --output /tmp/localpolicy
-```
+# Generate detailed reports
+python3 offline-policy-audit.py -i policy.xml -o reports/ --formats html json csv
 
-## online-policy-audit.py
-
-This script will perform an online audit on all existing policies from AMP console and highlight specific security concerns such as: 
-
-- Presence of "*" in exclusion list
-- Disabled security engine such as 'tetra' or 'spero'
-- "Audit" mode enabled on some security settings
-- Lack of "deep" scanning for archives, processes or other file types such as email
-- Long TTL for hash checks
-- Disabled Network Flow Monitoring (NFM)
-- Policy not updated for 12 or more months 
-- AMP installation not protected by password
-
-Please edit [config.txt](config.txt) and add appropriate API keys.
-
-Usage:
-```
-usage: online-policy-audit.py [-h] -c FILE
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -c FILE, --config FILE
-                        path to config file
+# iOS plist support
+python3 offline-policy-audit.py -i ios_policy.plist -o reports/ --formats html
 ```
 
-How to invoke:
-```
-python3 online-policy-audit.py --config /tmp/config.txt
-```
+#### `download-policy-xml.py`
+**Policy downloader for bulk analysis**
 
-## offline-policy-audit.py
-
-This script will perform an offline audit of an XML policy file passed in as argument and higlight the same defficienices as 'online' mode.
-
-Usage:
+```bash
+python3 download-policy-xml.py -c config.txt -o policies/
+python3 download-policy-xml.py -c config.txt -o policies/ --parallel
 ```
-usage: offline-policy-audit.py [-h] -i FILE
+## ⚙️ Configuration
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -i FILE, --input FILE
-                        path to AMP XML config file
-```
+Create a `config.txt` file with your API credentials:
 
-How to invoke:
-```
-python3 offline-policy-audit.py -i policyfile.xml
+```ini
+[api]
+client_id = your_client_id_here
+api_key = your_api_key_here
+domainIP = api.amp.cisco.com
 ```
 
-## AMP4E API Endpoints 
+### 🌍 Available API Endpoints
 
-AMP API endpoint need to be specified in the config file under 'domainIP' parameter. Please choose one depending on location of your console:
+Choose the appropriate endpoint for your region:
 
-- ```api.eu.amp.cisco.com``` - AMP EU 
-- ```api.amp.cisco.com``` - AMP
-- ```api.apjc.amp.cisco.com``` - AMP APJC
+| Region | Endpoint | Description |
+|--------|----------|-------------|
+| **Americas** | `api.amp.cisco.com` | North/South America |
+| **Europe** | `api.eu.amp.cisco.com` | Europe, Middle East, Africa |
+| **Asia-Pacific** | `api.apjc.amp.cisco.com` | Asia-Pacific region |
 
-## Example output from auditor
+### 🔑 Getting API Credentials
+
+1. Log in to your Cisco Secure Endpoint Console
+2. Navigate to **Accounts > Organization Settings**
+3. Click **Configure API Credentials** under Features
+4. Generate a new **Client ID** and **API Key**
+
+## 🛡️ Comprehensive Security Checks
+
+### 🔴 Critical Issues
+- **Dangerous Wildcards in Exclusions** - `*`, `.*`, `**` patterns
+- **Missing Password Protection** - Installation not secured
+- **Behavioral Protection Disabled** - Advanced analytics off
+- **Policy Outdated** - Not updated over 1 year
+- **Exploit Prevention Disabled** - Core protection features off
+
+### 🟡 Warnings  
+- **Audit-Only Security Modes** - Detection without blocking
+- **Disabled Security Engines** - TETRA, SPERO, ETHOS off
+- **SSL Verification Disabled** - Insecure connections
+- **Broad Exclusions** - Overly permissive exclusions
+- **Multiple Wildcard Exclusions** - Risky exclusion patterns
+- **No Scheduled Scans Configured** - Missing proactive scanning
+- **Infrequent Scheduled Scans** - Monthly or less frequent scanning
+
+### 🔵 Informational
+- **Long Cache TTLs** - Extended lookup times
+- **Disabled Telemetry** - Reduced threat intelligence
+- **UI Security Settings** - User interface exposure
+- **Update Configuration** - Update window restrictions
+
+### 📋 Supported Categories
+- **Exploit Prevention** 
+- **Behavioral Analytics**
+- **Script Protection (AMSI)**
+- **Network Monitoring** (including NFM action level validation)
+- **File/Process Exclusions** (enhanced wildcard detection)
+- **Scheduled Scanning** (frequency analysis and compliance)
+- **Password Protection** (installation security)
+- **Telemetry & Privacy**
+- **Command Line Capture**
+- **Endpoint Isolation**
+- **Scanning Engines**
+- **User Interface Security**
+
+## 📈 Sample Output
+
+### Console Output (Comprehensive Mode)
+```
+================================================================================
+CISCO SECURE ENDPOINT COMPREHENSIVE POLICY AUDIT
+================================================================================
+
+[+] Policy Name: Protect
+[+] Policy Type: WINDOWS
+[+] Policy UUID: xxxxxx-xxxxx-xxxxx-xxxx
+[+] Serial Number: 508
+[+] Last Updated: 2025-06-04 23:08:04+00:00 (22 days ago)
+
+[+] Comprehensive Exclusion Analysis:
+  File Exclusions Analysis:
+    [!] DANGEROUS: C:\\Windows\\ServiceProfiles\\LocalService\\AppData\\Local\\Temp\\Sophos.*
+    [!] DANGEROUS: CSIDL_WINDOWS\\Security\\database\\.*\.edb
+  
+  Process Exclusions Analysis:
+    [!] 2|0||C:\Windows\WinSxS\*\TiWorker.exe|1|
+
+[+] Comprehensive Agent Security Analysis:
+
+================================================================================
+COMPREHENSIVE AUDIT SUMMARY
+================================================================================
+
+[!] CRITICAL ISSUES (7):
+  - Dangerous Wildcard in File Exclusion: Exclusion contains risky pattern
+
+[*] WARNINGS (16):
+  - Behavioral Protection in Audit Mode: Detection only, not blocking
+  - SSL Host Verification Disabled: Insecure connections allowed
+  - No Scheduled Scans Configured: Missing proactive scanning
+
+[i] INFORMATIONAL (12):
+  - Many User Notifications Enabled: 5 notification types visible
 
 ```
-[+] Policy Name: Domain Controller
-[+] Policy GUID: XXXXXXXXXX
-[+] Policy Version: 129
-[+] Business GUID: XXXXXXXXXX
-[!] WARNING, Last policy change: 102 days, 8:58:49.211369 ago
-[+] File Exclusions in policy:
-         C:\Program Files\Sophos\AutoUpdate\Cache\
-         C:\ProgramData\Sophos\
-         C:\ProgramData\Sophos\AutoUpdate\Cache\
-         C:\Quarantine\
-         C:\System Volume Information\tracking.log
-        WARNING, wildecard : ^[A-Za-z]:\\.*\.sas.*
-        WARNING, wildecard : C:\\Users\\.*\\AppData\\Local\\Microsoft\\Office\\.*\\OfficeFileCache
-        WARNING, wildecard : C:\\Users\\.*\\AppData\\Local\\Microsoft\\OneDrive\\
-        WARNING, wildecard : C:\\Users\\.*\\OneDrive\\
-        WARNING, wildecard : C:\\Windows\\ServiceProfiles\\LocalService\\AppData\\Local\\Temp\\Sophos.*
-        WARNING, wildecard : C:\\Windows\\Temp\\Sophos.*
-[+] Certificate Exclusions in policy:
-         VeriSign Class 3 Code Signing
-[+] Process Exclusions in policy:
-         2|0||C:\Program Files\Altiris\Altiris Agent\AeXNSAgent.exe|1|
-         2|0||C:\Program Files\Common Files\microsoft shared\ClickToRun\OfficeClickToRun.exe|1|
-         2|0||C:\Program Files\McAfee\Endpoint Security\Adaptive Threat Protection\mfeatp.exe|1|
-         2|0||C:\Program Files\McAfee\Endpoint Security\Endpoint Security Platform\mfeesp.exe|1|
-         2|0||C:\Program Files\McAfee\Endpoint Security\Threat Prevention\mfetp.exe|1|
-[+] Specific Policy Misconfiguration:
-        [!]WARNING, System Isolation feature is disabled
-        [!]WARNING, ORBITAL is disabled
-        [!]WARNING, Monitoring of Network Drives is diabled
-        [!]WARNING, Network Flow Monitoring is disabled
-        [!]WARNING, Exploit Heuristic is disabled
-```
 
+### Output Formats
+| Format | Use Case | Features |
+|--------|----------|----------|
+| **Console** | Quick analysis | Real-time colored output |
+| **HTML** | Executive reports | Visual charts, professional styling |
+| **JSON** | Automation/SIEM | Machine-readable, API integration |
+| **CSV** | Spreadsheet analysis | Excel/Google Sheets compatible |
 
-## TODO
+## 📚 Documentation
 
-- [ ] Android policy handling
-- [ ] iOS policy handling
-- [x] Windows policy handling
-- [x] Linux policy handling
-- [x] Mac policy handling
-- [x] Security configuration parsing
-- [x] Policy download script
-- [x] Policy parsing in online/offline modes
+- **[Cisco Secure Endpoint Documentation](https://docs.amp.cisco.com/)**
+- **[API Reference](https://developer.cisco.com/docs/secure-endpoint/)**
+- **[Policy Configuration Guide](https://www.cisco.com/c/en/us/support/security/amp-endpoints/products-tech-notes-list.html)**
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
+
+## 📄 License
+
+See [LICENSE](LICENSE) file for details.
+
+## Disclaimer
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
